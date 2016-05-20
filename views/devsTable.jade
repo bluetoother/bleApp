@@ -1,0 +1,56 @@
+extends layout
+
+block append head
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/bower_components/bootstrap-table/src/bootstrap-table.css')
+    script(type='text/javascript', src='/socket.io/socket.io.js')
+    script(type='text/javascript', src='/javascripts/devsTable.js')
+    script(type='text/javascript', src='/bower_components/bootstrap-table/src/bootstrap-table.js')
+
+block content
+    div.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+        .container
+            table#table(data-toolbar='#toolbar', 
+                data-search='true', 
+                data-show-refresh='true', 
+                data-show-toggle='true', 
+                data-show-columns='true', 
+                data-show-export='true',
+                data-detail-formatter='detailFormatter', 
+                data-minimum-count-columns='2', 
+                data-show-pagination-switch='true', 
+                data-pagination='true', 
+                data-id-field='id', 
+                data-page-list='[10, 25, 50, 100, ALL]', 
+                data-show-footer='false', 
+                data-side-pagination='server')
+                thead
+                    tr
+                        th(rowspan='2', data-field='rmvdev', data-align="center", data-valign='middle')
+                        th(rowspan='2', data-field='devname', data-align="center", data-valign='middle') 
+                            .th-inner Device Name
+                            .fht-cell
+                        th(rowspan='2', data-field='devaddr', data-align="center", data-valign='middle') 
+                            .th-inner Device Address
+                            .fht-cell
+                        th(rowspan='2', data-field='devstatus', data-align="center", data-valign='middle')
+                            .th-inner Device Status
+                            .fht-cell
+                        //th.remove(rowspan='2', data-field='rmvdev', data-align="center", data-formatter="rmvDevFormatter", data-events="actionEvents") Remove Device
+                        th(colspan='3', data-field='devaddr', data-align="center") 
+                            .th-inner Applications
+                            .fht-cell
+
+                    tr 
+                        th(data-field='apptype', data-align="center") 
+                            .th-inner Application Type
+                            .fht-cell
+                        th(data-field='appname', data-align="center") 
+                            .th-inner Application Name
+                            .fht-cell
+                        th(tabindex=0, data-field='appdetail', data-align="center", data-formatter="actionFormatter") 
+                            .th-inner Application Detail
+                            .fht-cell
+                tbody.table-striped
+                each devInfo in devsInfo
+                    include includes/devInfoTable

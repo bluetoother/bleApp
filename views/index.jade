@@ -1,0 +1,71 @@
+extends layout
+
+block append head
+    script(src='/javascripts/bootstrap.js')
+    script(type='text/javascript', src='/socket.io/socket.io.js')
+    script(type='text/javascript', src='/javascripts/client.js')
+    script(type='text/javascript', src='/javascripts/Chart.js')
+    script(type='text/javascript', src='amcharts/amcharts.js')
+    script(type='text/javascript', src='amcharts/serial.js')
+    
+
+
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')   
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(name='description', content='')
+    meta(name='author', content='')
+    title SB Admin 2 - Bootstrap Admin Theme
+    //link(href='bower_components/bootstrap/dist/css/bootstrap.min.css', rel='stylesheet')
+    link(rel='stylesheet/less', type='text/css', href='/bower_components/bootstrap-timepicker/css/timepicker.less')
+    link(rel='stylesheet', href='bower_components/bootstrap-timepicker/css/bootstrap-timepicker.css')
+    //link(href='bower_components/metisMenu/dist/metisMenu.min.css', rel='stylesheet')
+    //link(href='dist/css/timeline.css', rel='stylesheet')
+    //link(href='dist/css/sb-admin-2.css', rel='stylesheet')
+    //link(href='bower_components/morrisjs/morris.css', rel='stylesheet')
+    //link(href='bower_components/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    
+
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    //script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
+    //script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')
+    //script(type='text/javascript', src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
+    script(type='text/javascript', src='/bower_components/bootstrap-timepicker/js/bootstrap-timepicker.js')
+
+    // Metis Menu Plugin JavaScript
+    //script(type='text/javascript', src='/bower_components/metisMenu/dist/metisMenu.js')
+    // Morris Charts JavaScript
+    //script(type='text/javascript', src='/bower_components/raphael/raphael-min.js')
+    //script(type='text/javascript', src='/bower_components/morrisjs/morris.min.js')    
+    //script(type='text/javascript', src='js/morris-data.js')
+    // Custom Theme JavaScript
+    //script(type='text/javascript', src='dist/js/sb-admin-2.js')
+
+block content          
+    div.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+        .row
+          .col-lg-12
+            h1.page-header Control
+          // /.col-lg-12
+        // /.row
+        .row
+        each ctrlDev in ctrlDevs
+
+            - if (ctrlDev) {
+                include includes/ctrlDevPanel
+            - }
+
+        // /.row
+        .row
+          .col-lg-12
+            h1.page-header Sensors
+          // /.col-lg-12
+        // /.row
+        .row
+          each sensorDev in sensorDevs
+
+            - if (sensorDev) {
+                include includes/sensorDevPanel
+            - }
+ 
+

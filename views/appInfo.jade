@@ -1,0 +1,91 @@
+extends layout
+
+block append head
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(href='dist/css/timeline.css', rel='stylesheet')
+    script(type='text/javascript', src='/socket.io/socket.io.js')
+    script(type='text/javascript', src='/javascripts/appInfo.js')
+    //script(type='text/javascript', src='/amcharts/amcharts.js')
+    //script(type='text/javascript', src='/amcharts/serial.js')
+    
+    script(type='text/javascript', src='/amchartstock/amcharts/amcharts.js')
+    script(type='text/javascript', src='/amchartstock/amcharts/serial.js')
+    script(type='text/javascript', src='/amchartstock/amcharts/themes/light.js')
+    script(type='text/javascript', src='/amchartstock/amcharts/amstock.js')
+
+
+
+    
+
+block content 
+    div.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+        .row.down
+            .col-lg-4.col-md-4
+                .panel.panel-primary
+                    .panel-heading
+                        i.fa.fa-info-circle.fa-fw  
+                        Application Application Information
+                    .panel-body
+                            //row.col-lg-6.col-md-6
+                            h4 Owner Device Information
+                            .list-group
+                                a.list-group-item Owner Device Name: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted
+                                        b= dev.name
+                                a.list-group-item Owner Device Address: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted
+                                        b= dev.addr
+                                a.list-group-item Owner Device Status: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted#status
+                                        b= dev.status
+                            //row.col-lg-6.col-md-6
+                            h4 Application Information
+                            .list-group
+                                a.list-group-item Sensor Name: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted
+                                        b#sensorTyp= app.name 
+                                a.list-group-item  Sensor Current Value: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted#value
+                                        b= app.val
+                            h4 Notification
+                            .list-group
+                                a.list-group-item Notification State: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted#notif
+                                        b= dev.notif
+                                a.list-group-item Notification Switch: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted.up
+                                        div.btn-group.nowrap
+                                            button.btn.btn-success.btn-outline.switchOn On
+                                            button.btn.btn-danger.btn-outline.switchOff Off
+                                //a.list-group-item Notification Rate: 
+                                    i.fa.fa-tag.fa-fw.pull-left 
+                                    span.pull-right.text-muted
+                                        b= app.val
+
+                
+                //.panel.panel-primary
+                    .panel-heading
+                        i.fa.fa-bar-chart-o.fa-fw  
+                        Notification Notification Operate
+                    .panel-body
+                        h3.nowrap Switch
+                        div.btn-group.nowrap
+                            button.btn.btn-success.btn-outline.btn-xs.switchOn On
+                            button.btn.btn-danger.btn-outline.btn-xs.switchOff Off
+                        h3 Rate
+
+
+            .col-lg-8.col-md-8
+                .panel.panel-primary
+                    .panel-heading
+                        i.fa.fa-bar-chart-o.fa-fw  
+                        Sensor Sensor Value Chart
+                    .panel-body
+                        #chartdiv

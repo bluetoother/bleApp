@@ -1,0 +1,31 @@
+- var imgSrc = '/images/' + sensorDev.path
+- href = '/devs_' + sensorDev.addr + '_' + sensorDev.id
+div.col-lg-3.col-md-6
+    .panel(class= sensorDev.color, id= sensorDev.addr)
+        .panel-heading
+            .row
+                .col-xs-2
+                    img.gadIcon(src= imgSrc)
+                |                                 
+                .col-xs-10.text-right
+                    - if (sensorDev.id === '0xcc0f' || sensorDev.id === '0xcc10' || sensorDev.id === '0xcc24') {
+                    div.midium.nowrap(id= sensorDev.id)= sensorDev.val
+                    - } else {
+                    div.huge.nowrap(id= sensorDev.id)= sensorDev.val
+                    - }
+                    |   
+                    - if (sensorDev.unit) {
+                    p.nowrap.tiny=  sensorDev.unit
+                    - }
+                    |                                     
+                    div= sensorDev.name
+        |                         
+        a(href= href)
+            .panel-footer
+                span.pull-left View Details
+                |                                 
+                span.pull-right
+                    i.fa.fa-arrow-circle-right
+                |                                 
+                .clearfix
+|         

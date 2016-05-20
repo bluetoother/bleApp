@@ -1,0 +1,22 @@
+- var imgSrc = '/images/' + ctrlDev.path
+div.col-lg-3.col-md-6
+    .panel(class= ctrlDev.color, id= ctrlDev.addr)
+        .panel-heading
+            .row
+                .col-xs-3
+                    img.gadIcon(src= imgSrc)
+                |                                 
+                .col-xs-9.text-right
+                    div.huge(id= ctrlDev.id)= ctrlDev.val
+                    |                              
+                    div= ctrlDev.name
+        |                         
+        a(href='#')
+            .panel-footer
+                - if (ctrlDev.id == '0xcc0e' || ctrlDev.id == '0xcc28') {
+                span.pull-right
+                    div.btn-group(id= ctrlDev.id, charId= ctrlDev.id, servId= ctrlDev.servId, devId= ctrlDev.addr)
+                        button.btn.btn-success.btn-outline.switchOn On
+                        button.btn.btn-danger.btn-outline.switchOff Off
+                - }                   
+                .clearfix            

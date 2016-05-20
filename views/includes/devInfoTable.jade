@@ -1,0 +1,32 @@
+- var rowLen = devInfo.ctrls.length + devInfo.sensors.length
+- if (devInfo.ctrls.length == 0) {
+    - var firstDev = devInfo.sensors.shift();
+    - if (firstDev) { firstDev.type = 'Sensor'; }
+- } else {
+    - var firstDev = devInfo.ctrls.shift();
+    - if (firstDev) { firstDev.type = 'Control'; }
+- }
+
+tr(id= firstDev.id)
+    td.remove(rowspan= rowLen)
+    td(rowspan= rowLen)= devInfo.name
+    td.id(rowspan= rowLen)= devInfo.addr
+    td(rowspan= rowLen)= devInfo.status    
+    td= firstDev.type
+    td= firstDev.name
+    //td image
+    //td image
+
+each ctrlDev in devInfo.ctrls
+    tr(id= ctrlDev.id)
+        td Control
+        td= ctrlDev.name
+        //td image
+        //td image
+
+each sensorDev in devInfo.sensors
+    tr(id= sensorDev.id)
+        td Sensor
+        td= sensorDev.name
+        //td image
+        //td image
