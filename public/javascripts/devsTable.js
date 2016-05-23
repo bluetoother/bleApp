@@ -1,4 +1,4 @@
-var socket = io.connect('http://192.168.204.128:3000/');
+var socket = io.connect('http://192.168.1.107:3000/');
 
 var tableData = [];
 
@@ -15,6 +15,7 @@ socket.on('bleInd', function (msg) {
 	if (msg.type === 'devLeaving') {
     	for (var i = 0; i < tdLen; i += 1) {
     		dev = tds.eq(i);
+
 	        if (dev.html() === data) {
 	        	dev.next().html('offline');
 	        }

@@ -24,6 +24,15 @@ var nineAxis,
     remoteCtrl,
     weatherStation;
 
+var tempValArr= [],
+    humidValArr = [],
+    baroValArr = [],
+    uvValArr = [],
+    accelerValArr = [],
+    magnetValArr = [],
+    gyroValArr = [];
+
+
 client.setKey('ZE1QH7o7Zad9pGR5h6e95CPqpncGenX1qttOa5WuHSE5eF9D');
 
 manager.enableBlackOrWhite(true, 'white');
@@ -41,9 +50,29 @@ exports.initialize = function(server) {
         bleSocket = socket;
 
         socket.on('cmd', clientCmdHdlr);
+
         socket.on('getTemp', function () {
             socket.emit('sendTemp', tempValArr);
         });
+        socket.on('getHumid', function () {
+            socket.emit('sendHumid', humidValArr);
+        });
+        socket.on('getBaro', function () {
+            socket.emit('sendBaro', baroValArr);
+        });
+        socket.on('getUv', function () {
+            socket.emit('sendUv', uvValArr);
+        });
+        socket.on('getAcceler', function () {
+            socket.emit('sendAcceler', accelerValArr);
+        });
+        socket.on('getMagnet', function () {
+            socket.emit('sendMagnet', magnetValArr);
+        });
+        socket.on('getGyro', function () {
+            socket.emit('sendGyro', gyroValArr);
+        });
+
         socket.on('error', function (errMsg) {
             console.log('**********************************************');
             console.log('socket emitter error: ');
@@ -100,44 +129,22 @@ function clientCmdHdlr (msg) {
         remoteCtrlChar;
 
     switch (msg.type) {
+        case 'setNotify':
+             dev = manager.find(data.devId);
+             dev.setNotify(data.uuidServ, data.uuidChar, data.config);
+            break;
         case 'write':
             dev = manager.find(data.devId);
-            if (data.devId === '0xd03972c3d10a') {
-                if (data.val === 'on') {
-                    switchLight('on');
-                } else {
-                    switchLight('off');
-                }
-                devmgr.findGad(data.devId, 'ctrls', data.uuidServ).val = data.val;
-            } else if (data.devId === '0x5c313e2bfb7b') {
-                if (data.val === 'on') {
-                    switchFan('on');
-                } else {
-                    switchFan('off');
-                }
-                devmgr.findGad(data.devId, 'ctrls', data.uuidServ).val = data.val;
-            } else if (data.devId === '0x00188c37b65c') {
-                chunk1 = data.val & 0xff;
-                chunk2 = (data.val & 0xff00 )>> 8;
 
-                devmgr.findGad(data.devId, 'ctrls', data.uuidServ);
-                if (data.uuidServ === '0x1814-3') {
-                    clkArr = [0x00, 0x00, 0x00, 0x71, chunk1, chunk2, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-                } else if (data.uuidServ === '0x1814-4') {
-                    clkArr = [0x00, 0x00, 0x00, 0x70, 0x74, 0x01, 0x30, 0x11, 0x5e, 0x06, 0x43, 0x00, 0x17, 0x00, chunk1, chunk2, 0x00, 0x00, 0x1b, 0x00];
-                }
-                healBracelet.write('0x1814', '0x2aff', new Buffer(clkArr));
-                devmgr.findGad(data.devId, 'ctrls', data.uuidServ).val = data.time;
-            }
-
-            if (data.devId === pir.addr) {
+            if (data.devId === relay.addr) {
+                relayChar = relay.findChar(data.uuidServ, data.uuidChar);
+                
+                relayChar.val.onOff = data.val;
+                relay.write(data.uuidServ, data.uuidChar, relayChar.val);
+            }else if (data.devId === pir.addr) {
                 buzzerChar = pir.findChar(data.uuidServ, data.uuidChar);
                 buzzerChar.val.onOff = data.val;
                 pir.write(data.uuidServ, data.uuidChar, buzzerChar.val);
-            } else if (data.devId === relay.addr) {
-                relayChar = relay.findChar(data.uuidServ, data.uuidChar);
-                relayChar.val.onOff = data.val;
-                relay.write(data.uuidServ, data.uuidChar, relayChar.val);
             }
             break;
 
@@ -231,17 +238,27 @@ function accelerHdlr(data) {
     var emitObj = {
             devAddr: nineAxis.addr,
             sensorType: '0xcc0f',
+            name: 'Accelerometer',
             value: {
                 x: data.xValue,
                 y: data.yValue,
                 z: data.zValue
             }
-        };
+        },
+        date = new Date();
 
     // console.log('Accelerometer sensed value');
     // console.log('X: ' + data.xValue + ' ' + data.units);
     // console.log('Y: ' + data.yValue + ' ' + data.units);
     // console.log('Z: ' + data.zValue + ' ' + data.units);
+
+    accelerValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: emitObj.value.x,
+        value2: emitObj.value.y,
+        value3: emitObj.value.z
+    });
 
     // judge data change
 
@@ -254,16 +271,28 @@ function magnetHdlr(data) {
     var emitObj = {
             devAddr: nineAxis.addr,
             sensorType: '0xcc10',
+            name: 'Magnetometer',
             value: {
                 x: data.xValue,
                 y: data.yValue,
                 z: data.zValue
             }
-        };
+        },
+        date = new Date();
+
     // console.log('Magnetometer sensed value');
     // console.log('X: ' + data.xValue + ' ' + data.units);
     // console.log('Y: ' + data.yValue + ' ' + data.units);
     // console.log('Z: ' + data.zValue + ' ' + data.units);
+
+    magnetValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: emitObj.value.x,
+        value2: emitObj.value.y,
+        value3: emitObj.value.z
+    });
+
     io.sockets.emit('bleInd', {type: 'attrInd', data: emitObj});
 }
 
@@ -272,16 +301,28 @@ function gryoHdlr(data) {
         emitObj = {
             devAddr: nineAxis.addr,
             sensorType: '0xcc24',
+            name: 'Gyrometer',
             value: {
                 x: data.xValue,
                 y: data.yValue,
                 z: data.zValue
             }
-        };
+        },
+        date = new Date();
+
     // console.log('Gyrometer sensed value');
     // console.log('X: ' + data.xValue + ' ' + data.units);
     // console.log('Y: ' + data.yValue + ' ' + data.units);
     // console.log('Z: ' + data.zValue + ' ' + data.units);
+
+    gyroValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: emitObj.value.x,
+        value2: emitObj.value.y,
+        value3: emitObj.value.z
+    });
+
     io.sockets.emit('bleInd', {type: 'attrInd', data: emitObj});
 }
 
@@ -290,6 +331,7 @@ function pirHdlr(data) {
         emitObj = {
             devAddr: pir.addr,
             sensorType: '0xcc00',
+            name: 'PIR',
             value: data.dInState
         };
 
@@ -392,12 +434,21 @@ function remoteCtrlHdlr(data) {
 }
 
 function tempHdlr(data) {
-    var emitObj = {
+    var tempVal = data.sensorValue / 100,
+        emitObj = {
             devAddr: weatherStation.addr,
             sensorType: '0xcc07',
-            value: data.sensorValue / 100
-        };
+            name: 'Temperature',
+            value: tempVal
+        },
+        date = new Date();
     // console.log('Temperature sensed value: ' + data.sensorValue);
+
+    tempValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: tempVal
+    });
 
     io.sockets.emit('bleInd', {type: 'attrInd', data: emitObj});
     // feed value to cloud
@@ -408,33 +459,63 @@ function temp2Hdlr(data) {
 }
 
 function humidHdlr(data) {
-    var emitObj = {
+    var humidVal = data.sensorValue / 100,
+        emitObj = {
             devAddr: weatherStation.addr,
             sensorType: '0xcc08',
-            value: data.sensorValue / 100
-        };
+            name: 'Humidity',
+            value: humidVal
+        },
+        date = new Date();
+
 //     console.log('Humidity sensed value: ' + data.sensorValue);
 //     console.log('');
+
+    humidValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: humidVal
+    });
 
     io.sockets.emit('bleInd', {type: 'attrInd', data: emitObj});
 }
 
 function uvHdlr(data) {
-    var emitObj = {
+    var uvVal = data.sensorValue,
+        emitObj = {
             devAddr: weatherStation.addr,
             sensorType: '0xcc05',
-            value: data.sensorValue
-        };
+            name: 'UV',
+            value: uvVal
+        },
+        date = new Date();
+
     // console.log('UV sensed value: ' + data.sensorValue);
+
+    uvValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: uvVal
+    });
+    
     io.sockets.emit('bleInd', {type: 'attrInd', data: emitObj});
 }
 
 function barometerHdlr(data) {
-    var emitObj = {
+    var baroVal = data.sensorValue,
+        emitObj = {
             devAddr: weatherStation.addr,
             sensorType: '0xcc11',
-            value: data.sensorValue
-        };
+            name: 'Barometer',
+            value: baroVal
+        },
+        date = new Date();
+
+    baroValArr.push({
+        date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
+               date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+        value: baroVal
+    });
     // console.log('Barometer sensed value: ' + data.sensorValue);
     io.sockets.emit('bleInd', {type: 'attrInd', data: emitObj});
 }
